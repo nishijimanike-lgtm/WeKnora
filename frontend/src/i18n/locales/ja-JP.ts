@@ -638,6 +638,7 @@ export default {
     channelYuque: 'Yuque',
     channelGitLab: 'GitLab',
     channelIma: 'Tencent IMA',
+    channelLocalDir: 'ローカルディレクトリ',
     channelUpload: 'アップロード',
     channelManual: '手動作成',
     channelUrl: 'Web',
@@ -6531,12 +6532,31 @@ export default {
       paths: 'ディレクトリ', pathsPlaceholder: '1行に1つのディレクトリを入力します。空欄の場合はプロジェクト全体を同期します',
       addProject: 'プロジェクトを追加', projectRequired: 'GitLabプロジェクトを1つ以上追加してください',
     },
+    localDir: {
+      location: 'ディレクトリの場所',
+      rootPath: 'サーバーディレクトリパス',
+      rootPathPlaceholder: '例：/data/local-datasources/my-data',
+      rootPathHint: 'WeKnoraサーバー上のディレクトリの絶対パス。管理者が設定した許可ディレクトリ（WEKNORA_LOCAL_DATASOURCE_ALLOWED_ROOTS）内にある必要があります。サブフォルダーで異なる性質・来源のデータを区別できます。',
+      fileExtensions: 'ファイル形式フィルター（任意）',
+      fileExtensionsPlaceholder: '例：pdf, docx, md',
+      fileExtensionsHint: 'カンマ区切り。空欄の場合はサポートされているすべての形式を同期します。',
+      maxFileSize: 'ファイルサイズ上限（MB）',
+      maxFileSizeHint: '上限を超えるファイルはスキップされます。デフォルト：100 MB。',
+      includeHidden: '隠しファイル・ディレクトリ（. で始まる）を含む',
+      includeHiddenHint: 'デフォルトでは隠しファイルと隠しディレクトリをスキップします。',
+      resourceHint: '同期するサブフォルダーまたはファイルを選択してください。サブフォルダーごとに異なる性質・来源のデータを管理でき、フォルダー階層はナレッジベースに保持されます。'
+    },
     resourceHint: '同期するスペースまたはフォルダを選択してください',
     untitled: '無題',
     resourceLoadFailed: 'リソースの読み込みに失敗しました',
     noResources: 'Wikiスペースが見つかりません',
     noResourcesDesc: 'コンテンツを取得するには、グループチャット経由でアプリにWikiのアクセス権限を付与する必要があります',
     noResourcesDesc_notion: 'コンテンツを取得するには、アプリにNotionページのアクセス権限が必要です',
+    noResources_local_dir: 'ディレクトリに同期可能なコンテンツがありません',
+    noResourcesDesc_local_dir: 'このディレクトリにはサポートされているファイルやサブフォルダーがありません。ディレクトリパスを確認するか、先にファイルを追加してください。',
+    guideStep1_local_dir: 'サーバーディレクトリ内に性質・来源ごとにサブフォルダーを作成し、サポートされているファイルを配置してください',
+    guideStep2_local_dir: '前のステップに戻って、ディレクトリパスやファイル形式フィルターなどの設定を変更できます',
+    guideStep3_local_dir: '「再試行」をクリックしてディレクトリ内容を再読み込みしてください',
     retryLoadResources: '再試行',
     guideStep1: 'Feishuでグループチャットを作成し、グループ設定でアプリをボットとして追加します',
     guideStep2: 'Wikiの「設定」>「メンバー設定」>「メンバーを追加」を開き、グループチャットを検索して追加します',
@@ -6602,7 +6622,8 @@ export default {
       dingtalk: 'DingTalkドキュメント',
       rss: 'RSS / Atomフィード',
       ima: 'Tencent IMA',
-      gitlab: 'GitLab'
+      gitlab: 'GitLab',
+      local_dir: 'ローカルディレクトリ'
     },
     connectorDesc: {
       feishu: 'Feishu Wikiからドキュメント、スプレッドシート、ファイルを同期します',
@@ -6615,7 +6636,8 @@ export default {
       dingtalk: 'DingTalkナレッジベースのオンラインドキュメントを同期',
       rss: 'RSS / Atomフィードから記事を同期します',
       ima: 'Tencent IMAのナレッジベースからドキュメント、ノート、ファイルを同期します（AIセッションと動画の解析は非対応）',
-      gitlab: 'GitLabプロジェクトからファイルを同期します'
+      gitlab: 'GitLabプロジェクトからファイルを同期します',
+      local_dir: 'WeKnoraサーバー上のローカルディレクトリからファイルを同期します。サブフォルダーで異なる性質・来源のデータを区別できます'
     },
     drive: {
       folderTokenLabel: 'Driveフォルダトークン',

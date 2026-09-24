@@ -1163,7 +1163,12 @@ func (s *knowledgeService) markKnowledgeEnqueueFailed(ctx context.Context, knowl
 
 func usesSourceIdentityDuplicateCheck(channel string) bool {
 	switch channel {
-	case types.ConnectorTypeGitLab, types.ChannelConfluence:
+	// File-centric connectors sync arbitrary files where identical bytes in
+	// different source locations are distinct documents (GitLab README
+	// templates, copied Confluence pages, duplicate files across local
+	// sub-folders). Scope the hash check to datasource_id + external_id so
+	// retries stay idempotent without colliding across locations.
+	case types.ConnectorTypeGitLab, types.ChannelConfluence, types.ChannelLocalDir:
 		return true
 	default:
 		return false

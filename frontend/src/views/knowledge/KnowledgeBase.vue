@@ -660,6 +660,7 @@ const sourceOptions = computed(() => [
   { label: t('knowledgeBase.channelConfluence'), value: 'confluence' },
   { label: t('knowledgeBase.channelGitLab'), value: 'gitlab' },
   { label: t('knowledgeBase.channelIma'), value: 'ima' },
+  { label: t('knowledgeBase.channelLocalDir'), value: 'local_dir' },
   { label: t('knowledgeBase.channelWechat'), value: 'wechat' },
   { label: t('knowledgeBase.channelWecom'), value: 'wecom' },
   { label: t('knowledgeBase.channelDingtalk'), value: 'dingtalk' },

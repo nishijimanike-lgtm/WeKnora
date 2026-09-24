@@ -1,6 +1,7 @@
 import feishuIcon from '@/assets/img/datasource-feishu.ico'
 import gitlabIcon from '@/assets/img/datasource-gitlab.png'
 import larkIcon from '@/assets/img/datasource-lark.svg'
+import localDirIcon from '@/assets/img/datasource-local.svg'
 import notionIcon from '@/assets/img/datasource-notion.ico'
 import yuqueIcon from '@/assets/img/datasource-yuque.ico'
 import rssIcon from '@/assets/img/datasource-rss.svg'
@@ -21,6 +22,7 @@ export const datasourceIconMap: Record<string, string> = {
   confluence: confluenceIcon,
   gitlab: gitlabIcon,
   ima: imaIcon,
+  local_dir: localDirIcon,
 }
 
 export function getDatasourceIconUrl(type: string): string | undefined {

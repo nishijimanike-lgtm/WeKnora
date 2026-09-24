@@ -22,7 +22,7 @@
 
 ## 选择连接器
 
-飞书、Lark、Notion 和语雀用于同步协作文档，GitLab 用于同步仓库中的文档目录，IMA 用于同步可访问的知识库与笔记，RSS 用于订阅文章。各连接器支持的格式、认证与删除检测见参考部分。
+飞书、Lark、Notion 和语雀用于同步协作文档，GitLab 用于同步仓库中的文档目录，IMA 用于同步可访问的知识库与笔记，RSS 用于订阅文章，本地目录用于同步 WeKnora 服务器本机目录中的文件（用子文件夹区分不同性质或来源的数据）。各连接器支持的格式、认证与删除检测见参考部分。
 
 ## 检查变更与失败
 
@@ -120,6 +120,19 @@
 - **抓取**：`gofeed` 解析 RSS/Atom/JSON feed；条目有链接时抓原文页过 readability 抽取器，成功则以全文为准，失败回退 feed 自带内容（`content:encoded`/`description`）；HTML 经 `html-to-markdown/v2` 转 Markdown。条目 ID 取 `GUID > Link > Title` 第一个非空值。
 - **增量逻辑**：双层指纹——先比 feed 侧信号指纹（`feedSignalFingerprint`，未变则连原文页都不抓）；再比抓取后内容的 SHA-256 指纹。**不支持删除同步**（feed 会自然淘汰旧条目）。
 - **部分失败**：单个 feed 抓取/解析失败时沿用旧游标（`copyFeedCursor`）并继续其余 feed，最终以 `datasource.PartialFetchError` 上报（SyncLog 记 `partial`）；全部 feed 都失败才整体报错。
+
+#### 本地目录（`connector/localdir/`）
+
+把 WeKnora 服务器本机目录中的文件同步为知识，无需任何在线凭据。典型用法：运维把一个共享/挂载目录交给 WeKnora，各业务方在其中建立子文件夹（如 `合同/`、`报表/`、`会议纪要/`）区分不同性质或来源的数据，用户在「添加数据源 → 本地目录」中选择目录路径，再勾选要同步的子文件夹或文件；知识库的文件夹树保留原有目录层级。
+
+- **安全边界（fail-closed）**：连接器默认关闭。运维须先设置 `WEKNORA_LOCAL_DATASOURCE_ALLOWED_ROOTS`（逗号分隔的允许目录列表；Docker 部署需同时把宿主机目录挂载进 app 容器）。用户填写的 `settings.root_path` 必须落在某个允许目录之内（两侧都先做符号链接解析再比对前缀），否则校验失败；枚举与读取的每个路径都复检包含关系，符号链接一律不跟随，路径穿越（`..`）直接拒绝。
+- **配置**：全部位于 **Settings**（无机密字段，`HasConfiguredCredentials` 恒为 false）：`root_path`（必填，绝对路径）、`file_extensions`（可选白名单，留空用内置受支持格式集，与 GitLab 连接器一致）、`max_file_size_mb`（默认 100，超限文件跳过并告警）、`include_hidden`（默认跳过 `.` 开头的文件与目录）。
+- **资源列举**：`root_path` 下一级子目录与受支持文件作为可选资源懒加载（`parentID` 逐级展开）；`ResolveResourceAncestors` 纯词法回显深层已选目录。
+- **同步**：`StreamingConnector` 流式实现，每个顶层选择完成后 checkpoint。增量游标记录 `root` 与每个文件的 `大小 + mtime` 签名：签名未变的文件跳过读取；仍被选中但已消失的文件报 `IsDeleted`（受数据源 `sync_deletions` 开关约束）；取消勾选而移出范围的条目只从游标顺延、**不**删除对应知识；根目录被改到别处时自动按全量处理。单个文件读取失败生成占位条目计入失败，不阻断其余同步；无法完整列举的子树暂缓删除检测，避免误删。
+
+```json
+{"settings":{"root_path":"/data/local-datasources/my-data","file_extensions":"pdf,docx,md","max_file_size_mb":100,"include_hidden":false},"resource_ids":["合同","报表/2026"]}
+```
 
 ### 数据源生命周期与 REST API
 
