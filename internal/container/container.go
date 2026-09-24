@@ -63,6 +63,7 @@ import (
 	"github.com/Tencent/WeKnora/internal/datasource/connector/feishu/wiki"
 	gitlabConnector "github.com/Tencent/WeKnora/internal/datasource/connector/gitlab"
 	imaConnector "github.com/Tencent/WeKnora/internal/datasource/connector/ima"
+	localdirConnector "github.com/Tencent/WeKnora/internal/datasource/connector/localdir"
 	notionConnector "github.com/Tencent/WeKnora/internal/datasource/connector/notion"
 	rssConnector "github.com/Tencent/WeKnora/internal/datasource/connector/rss"
 	yuqueConnector "github.com/Tencent/WeKnora/internal/datasource/connector/yuque"
@@ -1856,6 +1857,12 @@ func initConnectorRegistry() (*datasource.ConnectorRegistry, error) {
 	}
 	if err := registry.Register(gitlabConnector.NewConnector()); err != nil {
 		errs = errors.Join(errs, fmt.Errorf("register gitlab connector: %w", err))
+	}
+	// Local server directories. Always registered; the connector itself is
+	// inert unless the operator allowlists readable roots via
+	// WEKNORA_LOCAL_DATASOURCE_ALLOWED_ROOTS (fail-closed).
+	if err := registry.Register(localdirConnector.NewConnector()); err != nil {
+		errs = errors.Join(errs, fmt.Errorf("register local_dir connector: %w", err))
 	}
 
 	// Future connectors will be registered here:

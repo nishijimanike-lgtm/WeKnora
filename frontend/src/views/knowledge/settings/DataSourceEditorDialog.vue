@@ -231,6 +231,7 @@ const driveFolderTokenError = ref('')
 const driveRootLoaded = ref(false)
 const isDriveConnector = (type: string) => type === 'feishu_drive' || type === 'lark_drive'
 const isGitLabConnector = (type: string) => type === 'gitlab'
+const isLocalDirConnector = (type: string) => type === 'local_dir'
 
 interface GitLabProjectInput { project_id: string; ref: string; pathsText: string }
 const gitlabProjects = ref<GitLabProjectInput[]>([])
@@ -688,6 +689,13 @@ const connectorDefs = computed<ConnectorDef[]>(() => [
       { key: 'access_token', labelKey: 'datasource.gitlab.accessToken', placeholder: '', secret: true },
     ],
   },
+  {
+    // Local directory on the WeKnora server. No credentials: the root path
+    // and filters are plain settings; the backend enforces the operator
+    // allowlist (WEKNORA_LOCAL_DATASOURCE_ALLOWED_ROOTS).
+    type: 'local_dir', available: true, docUrl: '', permissionDocUrl: '', permissionPageUrl: '', requiredPermissions: [],
+    fields: [],
+  },
 ])
 
 
@@ -702,6 +710,13 @@ const displayedCredentialFields = computed(() => {
     if (field.key === "api_token") return form.value.config.credentials.edition === "cloud"
     return true
   })
+})
+
+// Credential-less connectors (e.g. local_dir) hide the whole credentials
+// section unless an edit-mode row actually has stored credentials.
+const showCredentialsSection = computed(() => {
+  if (isEdit.value && (credentialsConfigured.value || replaceCredentialsMode.value)) return true
+  return displayedCredentialFields.value.length > 0
 })
 
 // --- Drawer lifecycle ---
@@ -828,6 +843,16 @@ watch(
   },
 )
 
+watch(
+  () => form.value.config.settings.root_path,
+  () => {
+    if (needsConnectionTest()) {
+      testResult.value = ''
+      testErrorMsg.value = ''
+    }
+  },
+)
+
 function selectType(def: ConnectorDef) {
   if (!def.available) return
   form.value.type = def.type
@@ -846,6 +871,7 @@ async function testConnection() {
   syncRssAuthHeadersToCredentials()
   syncConfluencePublicFieldsToSettings()
   if (!validateRssFeedUrls()) return
+  if (!validateLocalDirRootPath()) return
   if (!isEdit.value || !credentialsConfigured.value || replaceCredentialsMode.value) {
     const fields = displayedCredentialFields.value
     for (const f of fields) {
@@ -875,6 +901,11 @@ async function testConnection() {
       if (form.value.type === 'rss') {
         // validate-credentials is credentials-only; feed URLs live in settings.
         creds.feed_urls = form.value.config.settings.feed_urls
+      }
+      if (isLocalDirConnector(form.value.type)) {
+        // Same pattern as RSS: root path is a setting, but validate-credentials
+        // only carries a credentials map, so it travels there transiently.
+        creds.root_path = form.value.config.settings.root_path
       }
       await validateCredentials(form.value.type, creds)
     }
@@ -1040,9 +1071,19 @@ function validateRssFeedUrls(): boolean {
   return true
 }
 
+function validateLocalDirRootPath(): boolean {
+  if (form.value.type !== 'local_dir') return true
+  if (!String(form.value.config.settings.root_path || '').trim()) {
+    MessagePlugin.warning(`${t('datasource.localDir.rootPath')} ${t('datasource.isRequired')}`)
+    return false
+  }
+  return true
+}
+
 function validateStep1Fields(): boolean {
   syncRssAuthHeadersToCredentials()
   if (!validateRssFeedUrls()) return false
+  if (!validateLocalDirRootPath()) return false
   if (isEdit.value && credentialsConfigured.value && !replaceCredentialsMode.value) {
     return true
   }
@@ -1493,7 +1534,47 @@ const drawerConfirmText = computed(() => {
         </div>
       </section>
 
-      <section class="setting-drawer__section">
+      <section v-if="form.type === 'local_dir'" class="setting-drawer__section">
+        <h4 class="setting-drawer__section-title">{{ t('datasource.localDir.location') }}</h4>
+        <div class="form-item">
+          <label class="form-label required">{{ t('datasource.localDir.rootPath') }}</label>
+          <t-input
+            v-model="form.config.settings.root_path"
+            :placeholder="t('datasource.localDir.rootPathPlaceholder')"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <p class="form-desc">{{ t('datasource.localDir.rootPathHint') }}</p>
+        </div>
+        <div class="form-item">
+          <label class="form-label">{{ t('datasource.localDir.fileExtensions') }}</label>
+          <t-input
+            v-model="form.config.settings.file_extensions"
+            :placeholder="t('datasource.localDir.fileExtensionsPlaceholder')"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <p class="form-desc">{{ t('datasource.localDir.fileExtensionsHint') }}</p>
+        </div>
+        <div class="form-item">
+          <label class="form-label">{{ t('datasource.localDir.maxFileSize') }}</label>
+          <t-input-number
+            v-model="form.config.settings.max_file_size_mb"
+            theme="normal"
+            :min="0"
+            :placeholder="'100'"
+          />
+          <p class="form-desc">{{ t('datasource.localDir.maxFileSizeHint') }}</p>
+        </div>
+        <div class="form-item">
+          <t-checkbox v-model="form.config.settings.include_hidden">
+            {{ t('datasource.localDir.includeHidden') }}
+          </t-checkbox>
+          <p class="form-desc">{{ t('datasource.localDir.includeHiddenHint') }}</p>
+        </div>
+      </section>
+
+      <section v-if="showCredentialsSection" class="setting-drawer__section">
         <h4 class="setting-drawer__section-title">{{ t('datasource.credentialsLabel') }}</h4>
 
         <div v-if="isEdit && credentialsConfigured && !replaceCredentialsMode" class="form-item">
@@ -1663,7 +1744,9 @@ const drawerConfirmText = computed(() => {
       </template>
       <template v-else>
       <h4 class="setting-drawer__section-title">{{ t('datasource.step.resources') }}</h4>
-      <p class="ds-resource-hint">{{ t('datasource.resourceHint') }}</p>
+      <p class="ds-resource-hint">
+        {{ isLocalDirConnector(form.type) ? t('datasource.localDir.resourceHint') : t('datasource.resourceHint') }}
+      </p>
 
       <!-- Drive (云盘) root input: shown alongside the tree (not as a switch).
            The user supplies a folder_token (or a Drive folder URL) and clicks
@@ -1791,7 +1874,7 @@ const drawerConfirmText = computed(() => {
       </div>
       <div v-else class="ds-resource-empty">
         <t-icon name="info-circle" size="32px" style="color: var(--td-warning-color); margin-bottom: 8px;" />
-        <p class="ds-empty-title">{{ t('datasource.noResources') }}</p>
+        <p class="ds-empty-title">{{ t(`datasource.noResources_${form.type}`, t('datasource.noResources')) }}</p>
         <p class="ds-empty-desc">{{ t(`datasource.noResourcesDesc_${form.type}`, t('datasource.noResourcesDesc')) }}</p>
         <div class="ds-guide-steps">
           <div class="ds-guide-step">

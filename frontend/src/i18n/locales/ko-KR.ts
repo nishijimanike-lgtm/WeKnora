@@ -835,12 +835,31 @@ export default {
       paths: '디렉터리', pathsPlaceholder: '한 줄에 하나씩 입력하세요. 비워 두면 전체 프로젝트를 동기화합니다',
       addProject: '프로젝트 추가', projectRequired: 'GitLab 프로젝트를 하나 이상 추가하세요',
     },
+    localDir: {
+      location: '디렉터리 위치',
+      rootPath: '서버 디렉터리 경로',
+      rootPathPlaceholder: '예: /data/local-datasources/my-data',
+      rootPathHint: 'WeKnora 서버에 있는 디렉터리의 절대 경로입니다. 관리자가 설정한 허용 디렉터리(WEKNORA_LOCAL_DATASOURCE_ALLOWED_ROOTS) 안에 있어야 합니다. 하위 폴더로 성격이나 출처가 다른 데이터를 구분할 수 있습니다.',
+      fileExtensions: '파일 형식 필터 (선택)',
+      fileExtensionsPlaceholder: '예: pdf, docx, md',
+      fileExtensionsHint: '쉼표로 구분합니다. 비워 두면 지원되는 모든 형식을 동기화합니다.',
+      maxFileSize: '파일 크기 제한 (MB)',
+      maxFileSizeHint: '제한을 초과하는 파일은 건너뜁니다. 기본값: 100 MB.',
+      includeHidden: '숨김 파일 및 디렉터리 포함 (.으로 시작)',
+      includeHiddenHint: '기본적으로 숨김 파일과 디렉터리는 건너뜁니다.',
+      resourceHint: '동기화할 하위 폴더 또는 파일을 선택하세요. 하위 폴더별로 성격이나 출처가 다른 데이터를 관리할 수 있으며, 폴더 구조는 지식 베이스에 유지됩니다.'
+    },
     resourceHint: '동기화할 공간/폴더를 선택하세요',
     untitled: '제목 없음',
     resourceLoadFailed: '리소스 목록 로드 실패',
     noResources: '동기화 가능한 위키 공간을 찾을 수 없습니다',
     noResourcesDesc: '앱이 콘텐츠를 가져오려면 그룹 채팅을 통해 위키 접근 권한을 얻어야 합니다',
     noResourcesDesc_notion: '앱이 콘텐츠를 가져오려면 Notion 페이지 접근 권한이 필요합니다',
+    noResources_local_dir: '디렉터리에 동기화할 수 있는 콘텐츠가 없습니다',
+    noResourcesDesc_local_dir: '이 디렉터리에는 지원되는 형식의 파일이나 하위 폴더가 없습니다. 디렉터리 경로를 확인하거나 먼저 파일을 추가하세요.',
+    guideStep1_local_dir: '서버 디렉터리 아래에 성격이나 출처별로 하위 폴더를 만들고 지원되는 파일을 넣으세요',
+    guideStep2_local_dir: '이전 단계로 돌아가 디렉터리 경로, 파일 형식 필터 등 설정을 변경할 수 있습니다',
+    guideStep3_local_dir: '"다시 시도"를 클릭해 디렉터리 내용을 다시 불러오세요',
     retryLoadResources: '다시 시도',
     guideStep1: 'Feishu에서 그룹 채팅을 만들고 그룹 설정의 \'그룹 봇\'에 앱을 추가하세요',
     guideStep2: '위키 \'설정\' > \'멤버 설정\' > \'멤버 추가\'를 열고 해당 그룹 채팅을 검색하여 추가하세요',
@@ -979,7 +998,8 @@ export default {
       dingtalk: 'DingTalk 지식베이스의 온라인 문서 동기화',
       ima: 'Tencent IMA 지식베이스에서 문서, 노트 및 파일 동기화 (AI 세션과 동영상 분석은 지원되지 않음)',
       rss: 'RSS / Atom 피드에서 글 동기화',
-      gitlab: 'GitLab 프로젝트의 파일 동기화'
+      gitlab: 'GitLab 프로젝트의 파일 동기화',
+      local_dir: 'WeKnora 서버의 로컬 디렉터리에서 파일을 동기화합니다. 하위 폴더로 성격이나 출처가 다른 데이터를 구분할 수 있습니다'
     },
     connector: {
       feishu: '페이슈 (Feishu)',
@@ -992,7 +1012,8 @@ export default {
       dingtalk: 'DingTalk 문서',
       ima: 'Tencent IMA',
       rss: 'RSS / Atom 피드',
-      gitlab: 'GitLab'
+      gitlab: 'GitLab',
+      local_dir: '로컬 디렉터리'
     },
     logDetail: {
       startTime: '시작 시간',
@@ -6819,6 +6840,7 @@ export default {
     channelYuque: 'Yuque',
     channelGitLab: 'GitLab',
     channelIma: 'Tencent IMA',
+    channelLocalDir: '로컬 디렉터리',
     channelUpload: '업로드',
     channelManual: '수동',
     channelUrl: '웹',

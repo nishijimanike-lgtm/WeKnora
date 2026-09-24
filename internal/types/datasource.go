@@ -38,6 +38,11 @@ const (
 	ConnectorTypeRSS         = "rss"
 	ConnectorTypeGitLab      = "gitlab"
 	ConnectorTypeIMA         = "ima"
+	// ConnectorTypeLocalDir syncs files from a directory on the WeKnora
+	// server's own filesystem. The root must live under one of the
+	// operator-allowlisted directories (WEKNORA_LOCAL_DATASOURCE_ALLOWED_ROOTS);
+	// sub-folders under the root distinguish data of different natures/origins.
+	ConnectorTypeLocalDir = "local_dir"
 
 	// Sync modes
 	SyncModeIncremental = "incremental"
@@ -246,7 +251,8 @@ func (d DataSourceConfig) HasCredentials() bool {
 
 // HasConfiguredCredentials reports whether user-facing secret credentials are
 // stored. RSS feed URLs are non-secret configuration (settings); only
-// auth_headers count as credentials for that connector.
+// auth_headers count as credentials for that connector. Local-directory
+// sources carry no secrets at all — root path and filters are settings.
 func (d DataSourceConfig) HasConfiguredCredentials(connectorType string) bool {
 	if len(d.Credentials) == 0 {
 		return false
@@ -259,6 +265,8 @@ func (d DataSourceConfig) HasConfiguredCredentials(connectorType string) bool {
 		}
 		s, ok := raw.(string)
 		return ok && strings.TrimSpace(s) != ""
+	case ConnectorTypeLocalDir:
+		return false
 	default:
 		return len(d.Credentials) > 0
 	}
@@ -276,6 +284,10 @@ func (d *DataSourceConfig) StripNonSecretCredentials(connectorType string) {
 		if len(d.Credentials) == 0 {
 			d.Credentials = nil
 		}
+	case ConnectorTypeLocalDir:
+		// Everything for the local-directory connector (root path, filters)
+		// is non-secret settings; drop anything sent on the credentials map.
+		d.Credentials = nil
 	}
 }
 

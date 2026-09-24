@@ -47,7 +47,7 @@ WeKnora（维娜拉）是腾讯开源的知识库问答系统，支持导入 PDF
 | FAQ | 维护标准问、相似问、反例问和答案的问答条目，详见[FAQ 能力](../03-features/17-faq.md) |
 | Wiki 页面 WikiPage | 从文档生成的主题页面，带来源引用和页面链接，支持编辑与版本管理 |
 | 知识图谱 Entity / Relationship | 文档中的实体与关系，保存在 Neo4j，用于补充关联内容检索 |
-| 数据源 DataSource | 持续同步外部资料的连接。支持飞书、Lark、GitLab、IMA、Notion、语雀和 RSS，详见[数据源导入](../03-features/10-datasource.md) |
+| 数据源 DataSource | 持续同步外部资料的连接。支持飞书、Lark、GitLab、IMA、Notion、语雀、RSS 和本地目录，详见[数据源导入](../03-features/10-datasource.md) |
 | 检索配置 RetrievalConfig | 控制候选数量、匹配阈值、融合权重和重排结果，详见[检索引擎](../03-features/05-retrieval-engines.md) |
 
 ### 对话与智能体

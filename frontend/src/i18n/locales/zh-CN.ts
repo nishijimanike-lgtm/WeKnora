@@ -837,12 +837,31 @@ export default {
       paths: '同步目录', pathsPlaceholder: '每行一个目录；留空同步整个项目',
       addProject: '添加项目', projectRequired: '请至少添加一个 GitLab 项目',
     },
+    localDir: {
+      location: '目录位置',
+      rootPath: '服务器目录路径',
+      rootPathPlaceholder: '例如：/data/local-datasources/my-data',
+      rootPathHint: '填写 WeKnora 服务器上目录的绝对路径，需位于管理员配置的允许目录（WEKNORA_LOCAL_DATASOURCE_ALLOWED_ROOTS）内；目录下的子文件夹可用于区分不同性质或来源的数据',
+      fileExtensions: '文件类型过滤（可选）',
+      fileExtensionsPlaceholder: '例如：pdf, docx, md',
+      fileExtensionsHint: '逗号分隔；留空则同步所有受支持格式的文件',
+      maxFileSize: '单文件大小上限（MB）',
+      maxFileSizeHint: '超过上限的文件将被跳过，默认 100 MB',
+      includeHidden: '包含隐藏文件和目录（以 . 开头）',
+      includeHiddenHint: '默认跳过隐藏文件与隐藏目录',
+      resourceHint: '勾选需要同步的子文件夹或文件；每个子文件夹可用于区分不同性质或来源的数据，目录层级会保留在知识库的文件夹树中'
+    },
     resourceHint: '选择要同步的内容空间/文件夹',
     untitled: '无标题',
     resourceLoadFailed: '加载资源列表失败',
     noResources: '未找到可同步的知识库空间',
     noResourcesDesc: '应用需要通过群聊获得知识库访问权限才能拉取内容',
     noResourcesDesc_notion: '应用需要获得 Notion 页面的访问权限才能拉取内容',
+    noResources_local_dir: '目录中没有可同步的内容',
+    noResourcesDesc_local_dir: '该目录下没有受支持格式的文件或子文件夹。请检查目录路径是否正确，或先在目录中放入文件',
+    guideStep1_local_dir: '在服务器目录中按性质或来源建立子文件夹，并放入受支持格式的文件',
+    guideStep2_local_dir: '返回上一步可修改目录路径、文件类型过滤等配置',
+    guideStep3_local_dir: '点击“重试”重新加载目录内容',
     retryLoadResources: '重新加载',
     guideStep1: '在飞书中创建一个群聊，在群设置「群机器人」中添加你的应用',
     guideStep2: '打开知识库「设置」→「成员设置」→ 添加成员，搜索该群聊名称并添加',
@@ -981,7 +1000,8 @@ export default {
       dingtalk: '同步钉钉知识库中的在线文档',
       ima: '同步腾讯 IMA 知识库中的文档、笔记与文件（暂不支持 AI 会话与视频解析）',
       rss: '同步 RSS / Atom 订阅源中的文章',
-      gitlab: '同步 GitLab 项目中的文件'
+      gitlab: '同步 GitLab 项目中的文件',
+      local_dir: '同步 WeKnora 服务器本地目录中的文件，可用子文件夹区分不同性质或来源的数据'
     },
     connector: {
       feishu: '飞书',
@@ -994,7 +1014,8 @@ export default {
       dingtalk: '钉钉文档',
       ima: '腾讯 IMA',
       rss: 'RSS / Atom 订阅',
-      gitlab: 'GitLab'
+      gitlab: 'GitLab',
+      local_dir: '本地目录'
     },
     logDetail: {
       startTime: '开始时间',
@@ -6821,6 +6842,7 @@ export default {
     channelYuque: '语雀',
     channelGitLab: 'GitLab',
     channelIma: '腾讯 IMA',
+    channelLocalDir: '本地目录',
     channelUpload: '上传',
     channelManual: '手动',
     channelUrl: '网页',

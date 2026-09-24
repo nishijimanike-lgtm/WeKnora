@@ -638,6 +638,7 @@ export default {
     channelYuque: 'Yuque',
     channelGitLab: 'GitLab',
     channelIma: 'Tencent IMA',
+    channelLocalDir: 'Local Directory',
     channelUpload: 'Upload',
     channelManual: 'Manual',
     channelUrl: 'Web',
@@ -6531,12 +6532,31 @@ export default {
       paths: 'Directories', pathsPlaceholder: 'One directory per line; leave empty to sync the whole project',
       addProject: 'Add project', projectRequired: 'Add at least one GitLab project',
     },
+    localDir: {
+      location: 'Directory location',
+      rootPath: 'Server directory path',
+      rootPathPlaceholder: 'e.g. /data/local-datasources/my-data',
+      rootPathHint: 'Absolute path of a directory on the WeKnora server. It must be inside the operator-allowlisted directories (WEKNORA_LOCAL_DATASOURCE_ALLOWED_ROOTS). Sub-folders can distinguish data of different natures or origins.',
+      fileExtensions: 'File type filter (optional)',
+      fileExtensionsPlaceholder: 'e.g. pdf, docx, md',
+      fileExtensionsHint: 'Comma-separated. Leave empty to sync every supported file format.',
+      maxFileSize: 'Max file size (MB)',
+      maxFileSizeHint: 'Files above the limit are skipped. Default: 100 MB.',
+      includeHidden: 'Include hidden files and directories (starting with .)',
+      includeHiddenHint: 'Hidden files and directories are skipped by default.',
+      resourceHint: 'Pick the sub-folders or files to sync. Each sub-folder can hold data of a different nature or origin; the folder hierarchy is preserved in the knowledge base.'
+    },
     resourceHint: 'Select the spaces or folders to sync',
     untitled: 'Untitled',
     resourceLoadFailed: 'Failed to load resources',
     noResources: 'No wiki spaces found',
     noResourcesDesc: 'The app needs wiki access via a group chat to fetch content',
     noResourcesDesc_notion: 'The app needs Notion page access permissions to fetch content',
+    noResources_local_dir: 'No syncable content in the directory',
+    noResourcesDesc_local_dir: 'The directory has no supported files or sub-folders. Check the directory path, or add files to the directory first.',
+    guideStep1_local_dir: 'Create a sub-folder per data nature/origin under the server directory and place supported files inside',
+    guideStep2_local_dir: 'Go back to change the directory path, file-type filter and other settings',
+    guideStep3_local_dir: 'Click "Retry" to reload the directory contents',
     retryLoadResources: 'Retry',
     guideStep1: 'Create a group chat in Feishu, then add your app as a bot in the group settings',
     guideStep2: 'Open wiki "Settings" > "Member Settings" > "Add Member", search for the group chat and add it',
@@ -6602,7 +6622,8 @@ export default {
       dingtalk: 'DingTalk Docs',
       rss: 'RSS / Atom Feed',
       ima: 'Tencent IMA',
-      gitlab: 'GitLab'
+      gitlab: 'GitLab',
+      local_dir: 'Local Directory'
     },
     connectorDesc: {
       feishu: 'Sync documents, spreadsheets and files from Feishu Wiki',
@@ -6615,7 +6636,8 @@ export default {
       dingtalk: 'Sync online documents from DingTalk knowledge bases',
       rss: 'Sync articles from RSS / Atom feeds',
       ima: 'Sync documents, notes and files from Tencent IMA knowledge bases (AI sessions and video parses are not supported)',
-      gitlab: 'Sync files from GitLab projects'
+      gitlab: 'Sync files from GitLab projects',
+      local_dir: 'Sync files from a directory on the WeKnora server; use sub-folders to distinguish data of different natures or origins'
     },
     drive: {
       folderTokenLabel: 'Drive folder token',
