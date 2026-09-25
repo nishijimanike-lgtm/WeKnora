@@ -54,3 +54,17 @@
   1. `docker compose ps` 显示所有核心服务均为 `Up (healthy)`。
   2. 宿主机调用 `http://localhost:5188/health` 获得 200 OK 响应。
   3. 宿主机浏览器访问 `http://localhost:3188` 成功打开 WeKnora 登录/工作区界面。
+
+---
+
+## 5. 常见运维与排错记录
+
+1. **WSL2 空闲休眠导致前端网络中断**：
+   * **现象**：登录时页面提示“网络错误，请检查您的网络连接”。
+   * **原因**：WSL2 默认在无前台会话时自动休眠进入 `Stopped`。
+   * **解决**：在 `~/.wslconfig` 的 `[wsl2]` 下配置 `vmIdleTimeout=-1`，保证系统后台常驻。
+
+2. **代理软件 TUN/Fake-IP 模式触发 SSRF 拦截**：
+   * **现象**：添加 DeepSeek 或外部大模型 API 时提示 `SSRF validation failed: hostname ... resolves to restricted IP 198.18.0.x: restricted range 198.18.0.0/15`。
+   * **原因**：本机代理（Clash/Mihomo 等）将域名解析为 Fake-IP 网段 `198.18.0.0/15`，触发了 WeKnora 的内网保护机制。
+   * **解决**：在 `.env` 中配置 `SSRF_WHITELIST=198.18.0.0/15,api.deepseek.com,*.deepseek.com,*.openai.com,*.moonshot.cn,*.siliconflow.cn,*.zhipuai.cn,*.minimax.chat,*.volces.com`，放行 Fake-IP 段及常见大模型域名。
