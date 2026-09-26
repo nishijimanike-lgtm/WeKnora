@@ -20,6 +20,10 @@ if [[ "$(uname -s)" =~ (MINGW|MSYS|CYGWIN) ]]; then
     if [ -z "$CMD" ]; then
         CMD="help"
     fi
+    # 启动/重启时在后台维持一个持久化会话，防止 WSL2 空闲自动休眠导致端口断开
+    if [[ "$CMD" =~ ^(start|up|restart) ]]; then
+        powershell.exe -NoProfile -Command "Start-Process wsl.exe -ArgumentList '-d', '$WSL_DISTRO', '--exec', 'sleep', 'infinity' -WindowStyle Hidden" >/dev/null 2>&1
+    fi
     exec wsl -d "$WSL_DISTRO" -- bash -c "cd '$PROJECT_DIR_WSL' && ./wsl-manage.sh $CMD"
 fi
 
