@@ -68,3 +68,8 @@
    * **现象**：添加 DeepSeek 或外部大模型 API 时提示 `SSRF validation failed: hostname ... resolves to restricted IP 198.18.0.x: restricted range 198.18.0.0/15`。
    * **原因**：本机代理（Clash/Mihomo 等）将域名解析为 Fake-IP 网段 `198.18.0.0/15`，触发了 WeKnora 的内网保护机制。
    * **解决**：在 `.env` 中配置 `SSRF_WHITELIST=198.18.0.0/15,api.deepseek.com,*.deepseek.com,*.openai.com,*.moonshot.cn,*.siliconflow.cn,*.zhipuai.cn,*.minimax.chat,*.volces.com`，放行 Fake-IP 段及常见大模型域名。
+
+3. **Clash Verge TUN / WSL2 镜像网络下无法识别本地 Ollama**：
+   * **现象**：系统初始化检测或添加模型时无法连接 Windows 本地 Ollama。
+   * **原因**：Windows 端 Ollama 默认仅监听 `127.0.0.1:11434`；在 WSL2 `mirrored` 网络与 TUN 模式下，Docker 容器虚拟网桥（`172.18.0.0/16`）的请求无法直接穿透回宿主机的环回口。
+   * **解决**：在 WSL2 中部署 `ollama-proxy.service`（通过 `socat` 将 `172.18.0.1:11435` 透明转发到宿主机 `127.0.0.1:11434`），并在 `docker-compose.yml` 将 `host.docker.internal` 映射到网关 `172.18.0.1`，同时将 `OLLAMA_BASE_URL` 设为 `http://host.docker.internal:11435`。
